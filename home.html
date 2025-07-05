@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: #f0f4f8;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .email-display {
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 12px;
+      display: block;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Student Profile</h2>
+    <div class="email-display" id="userEmail">Loading...</div>
+
+    <label for="name">Name</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label for="branch">Branch</label>
+    <input type="text" id="branch" placeholder="Enter your branch">
+
+    <label for="college">College</label>
+    <input type="text" id="college" placeholder="Enter your college">
+
+    <label for="hallticket">Hall Ticket</label>
+    <input type="text" id="hallticket" placeholder="Enter your hall ticket number">
+
+    <label for="cgpa">CGPA</label>
+    <input type="text" id="cgpa" placeholder="Enter your CGPA">
+
+    <button onclick="saveProfile()">Save Profile</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, query, where, orderBy,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBbDCLC9pD0iDI8dsRLcJhW1RjTvBx8qPA",
+      authDomain: "ransomware-a4709.firebaseapp.com",
+      projectId: "ransomware-a4709",
+      storageBucket: "ransomware-a4709.appspot.com",
+      messagingSenderId: "674594795152",
+      appId: "1:674594795152:web:0b23a27e3c8c29214eb215"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('userEmail').textContent = user.email;
+
+        const profilesRef = collection(db, "profiles");
+        const q = query(profilesRef, where("uid", "==", user.uid), orderBy("timestamp", "desc"));
+        const snapshot = await getDocs(q);
+
+        if (!snapshot.empty) {
+          const data = snapshot.docs[0].data(); // latest profile
+          document.getElementById('name').value = data.name || '';
+          document.getElementById('branch').value = data.branch || '';
+          document.getElementById('college').value = data.college || '';
+          document.getElementById('hallticket').value = data.hallticket || '';
+          document.getElementById('cgpa').value = data.cgpa || '';
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    window.saveProfile = async function () {
+      const name = document.getElementById('name').value;
+      const branch = document.getElementById('branch').value;
+      const college = document.getElementById('college').value;
+      const hallticket = document.getElementById('hallticket').value;
+      const cgpa = document.getElementById('cgpa').value;
+
+      if (!currentUser) return;
+
+      const profilesRef = collection(db, "profiles");
+
+      await addDoc(profilesRef, {
+        uid: currentUser.uid,
+        email: currentUser.email,
+        name,
+        branch,
+        college,
+        hallticket,
+        cgpa,
+        timestamp: new Date()
+      });
+
+      alert("Profile saved successfully!");
+    };
+  </script>
+</body>
+</html>

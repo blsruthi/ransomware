@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Role</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background: linear-gradient(to right, #74ebd5, #9face6);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      display: flex;
+      gap: 40px;
+      text-align: center;
+    }
+    .role-box {
+      background: white;
+      padding: 50px 70px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, background 0.3s ease;
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: 600;
+      min-width: 200px;
+    }
+    .role-box:hover {
+      transform: translateY(-10px);
+      background: #f0f4ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="role-box" onclick="location.href='home.html'">👤 User</div>
+    <div class="role-box" onclick="location.href='admin_alogin.html'">🧑‍💼 Admin</div>
+  </div>
+</body>
+</html>
